@@ -7,10 +7,8 @@ function App() {
   const [target, setTarget] = useState(false);
   const [range, setRange] = useState(null);
   const [type, setType] = useState("Custom");
+  const [search, setSearch] = useState("linear");
   const [arr, setArr] = useState([]);
-
-
-  
 
 
   const binarySearch = async (arr, target) => {
@@ -26,7 +24,6 @@ function App() {
       if (target < arr[mid]) {
         let m = mid;
         for (m; mid > end; m++) {
-          console.log(m);
           const x = document.getElementById(`${m}`);
           x.style.border = '3px solid red';
           x.style.backgroundColor = 'red';
@@ -53,6 +50,28 @@ function App() {
   }
 
 
+  const linearSearch = async (arr, target) => {
+    let i = 0;
+    let t = parseInt(target);
+    for (i; i < arr.length; i++) {
+      if (arr[i] === t) {
+        const x = document.getElementById(`${i}`);
+        x.style.border = "2px solid green";
+        x.style.backgroundColor = 'green';
+        x.style.color = 'white';
+        return i;
+      } else {
+        const x = document.getElementById(`${i}`);
+        x.style.border = '3px solid red';
+        x.style.backgroundColor = 'red';
+        x.style.color = 'white';
+        await sleep(1000);
+      }
+    }
+    return -1;
+  }
+
+
   const bubbleSort = async (arr) => {
     const len = arr.length;
     for (let i = 0; i < len - 1; i++) {
@@ -73,7 +92,6 @@ function App() {
         }
       }
     }
-
     console.log("sorting end");
     return arr;
   }
@@ -131,7 +149,6 @@ function App() {
           <select className='input' onChange={async (e) => {
             const value = e.target.value;
             setType(value);
-
             if (range !== null && value === "Random") {
               let i = 0;
               let len = document.querySelectorAll('.arrayInputBox');
@@ -150,6 +167,14 @@ function App() {
           }}>
             <option value="Custom">Custom</option>
             <option value="Random" >Random</option>
+          </select>
+
+
+          <select className='input' onChange={(e) => {
+            setSearch(e.target.value);
+          }}>
+            <option value="linear">Linear Search</option>
+            <option value="binary" >Binary Search</option>
           </select>
 
         </div>
@@ -173,10 +198,12 @@ function App() {
             <button className='input center' style={{ backgroundColor: "red", color: "white" }} onClick={() => {
               setRange(null);
               setTargetValue(null);
+              setArr([]);
             }}>Reset</button>
             <button className='input center btn' onClick={async () => {
               let arr = [];
               let i = 0;
+
               let len = document.querySelectorAll('.arrayInputBox');
               for (i; i < len.length; i++) {
                 const inputs = document.getElementById(`${i}`);
@@ -186,34 +213,53 @@ function App() {
                   arr[i] = 0;
                   inputs.value = 0;
                 }
+                console.log("Mirza");
 
               }
-              const sorted = await bubbleSort(arr);
-              if (sorted) {
-                const ret = await binarySearch(arr, targetValue);
-                if (ret !== -1) {
-                  const box = document.getElementById(`${ret}`);
+
+
+              if (search === "linear") {
+                const retx = await linearSearch(arr, targetValue);
+                if (retx === -1) {
+                  alert("Target value not found");
+                } else {
+                  const box = document.getElementById(`${retx}`);
                   box.style.backgroundColor = 'green';
                   box.style.border = "green";
                   box.style.color = "white";
                   box.style.fontSize = "18px";
                   box.style.fontWeight = "bold";
-                } else {
-                  let j = 0;
-                  for (j; j < len.length; j++) {
-                    let s = document.getElementById(`${j}`);
-                    s.value = arr[j];
-                    s.disabled = true;
-                    s.style.backgroundColor = 'red';
-                    s.style.border = "red";
-                    s.style.color = "white";
-                  }
-                  alert("Target value not found");
-
                 }
+
+              } else {
+                const sorted = await bubbleSort(arr);
+                if (sorted) {
+                  const ret = await binarySearch(arr, targetValue);
+                  if (ret !== -1) {
+                    const box = document.getElementById(`${ret}`);
+                    box.style.backgroundColor = 'green';
+                    box.style.border = "green";
+                    box.style.color = "white";
+                    box.style.fontSize = "18px";
+                    box.style.fontWeight = "bold";
+                  } else {
+                    let j = 0;
+                    for (j; j < len.length; j++) {
+                      let s = document.getElementById(`${j}`);
+                      s.value = arr[j];
+                      s.disabled = true;
+                      s.style.backgroundColor = 'red';
+                      s.style.border = "red";
+                      s.style.color = "white";
+                    }
+                    alert("Target value not found");
+
+                  }
+                }
+
+
               }
             }}>Search</button>
-
 
           </> : null}
 
